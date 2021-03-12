@@ -56,7 +56,7 @@ jobs:
       - name: "Linux x86: Setup chroot"
         if: ${{ matrix.env == 'Linux' && matrix.arch == 'x86' }}
         run: |
-          curl -L https://github.com/legacyclonk/ubuntu-1804-x86-chroot/releases/download/2020-09-26/chroot.tar.xz | sudo tar -xJ
+          curl -L https://github.com/legacyclonk/ubuntu-1804-x86-chroot/releases/download/2021-03-12/chroot.tar.xz | sudo tar -xJ
           curl -L https://raw.githubusercontent.com/legacyclonk/ubuntu-1804-x86-chroot/master/setup_chroot.sh | sudo bash -e -
           sudo mkdir -p chroot/$PWD
           sudo mount --bind . chroot/$PWD
