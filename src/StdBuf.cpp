@@ -126,52 +126,30 @@ void StdStrBuf::AppendFormat(const char *szFmt, ...)
 	AppendFormatV(szFmt, args);
 }
 
-void StdStrBuf::AppendFormatV(const char *szFmt, va_list args)
+void StdStrBuf::AppendFormatV(const char *format, va_list args)
 {
-	if (!IsSafeFormatString(szFmt))
+	if (!IsSafeFormatString(format))
 	{
 		BREAKPOINT_HERE
-		szFmt = "<UNSAFE FORMAT STRING>";
+		format = "<UNSAFE FORMAT STRING>";
 	}
 
-	// Save append start
-	const auto iStart = getLength();
-#ifdef HAVE_VSCPRINTF
-	// Calculate size, allocate
-	int iLength = vscprintf(szFmt, args);
-	Grow(iLength);
-	// Format
-	char *pPos = getMElem<char>(*this, iSize - iLength - 1);
-	vsprintf(getMPtr(iStart), szFmt, args);
-#else
-	int iBytes;
-#ifdef HAVE_VASPRINTF
-	// Format
-	char *pStr;
-	iBytes = vasprintf(&pStr, szFmt, args);
-	if (iBytes < 0 || !pStr) return;
-	// Append
-	if (isNull())
-		Take(pStr, static_cast<size_t>(iBytes));
-	else
+	const size_t start{getLength()};
+
+	va_list argsCopy;
+	va_copy(argsCopy, args);
+	const int32_t neededBytes{vsnprintf(nullptr, 0, format, argsCopy)};
+	va_end(argsCopy);
+
+	if (neededBytes == -1)
 	{
-		Append(pStr, static_cast<size_t>(iBytes));
-		free(pStr);
+		return;
 	}
-#else
-	// Save append start
-	do
-	{
-		// Grow
-		Grow(512);
-		// Try output
-		iBytes = vsnprintf(getMPtr(iStart), getLength() - iStart, szFmt, args);
-	} while (iBytes < 0 || static_cast<size_t>(iBytes) >= getLength() - iStart);
-	// Calculate real length, if vsnprintf didn't return anything of value
-#endif
-	// Shrink to fit
-	SetSize(iStart + strlen(getMPtr(iStart)) + 1);
-#endif
+
+	SetSize(getLength() + 1 + neededBytes);
+
+	vsnprintf(getMPtr(start), neededBytes + 1, format, args);
+	va_end(args);
 }
 
 void StdStrBuf::CompileFunc(StdCompiler *pComp, int iRawType)

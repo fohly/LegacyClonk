@@ -607,7 +607,7 @@ public:
 	void Format(const char *szFmt, ...) GNUC_FORMAT_ATTRIBUTE_O;
 	void FormatV(const char *szFmt, va_list args);
 	void AppendFormat(const char *szFmt, ...) GNUC_FORMAT_ATTRIBUTE_O;
-	void AppendFormatV(const char *szFmt, va_list args);
+	void AppendFormatV(const char *format, va_list args);
 
 	StdStrBuf copyPart(size_t iStart, size_t inSize) const
 	{
