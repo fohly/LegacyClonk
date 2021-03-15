@@ -108,6 +108,7 @@ void StdStrBuf::Format(const char *szFmt, ...)
 	va_list args; va_start(args, szFmt);
 	// Format
 	FormatV(szFmt, args);
+	va_end(args);
 }
 
 void StdStrBuf::FormatV(const char *szFmt, va_list args)
@@ -124,6 +125,7 @@ void StdStrBuf::AppendFormat(const char *szFmt, ...)
 	va_list args; va_start(args, szFmt);
 	// Format
 	AppendFormatV(szFmt, args);
+	va_end(args);
 }
 
 void StdStrBuf::AppendFormatV(const char *format, va_list args)
